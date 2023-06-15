@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Master-Detail Page</title>
+    <!-- CSS only -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <!-- JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-4">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in data %}
+                        <tr class="data-row" data-datetime="{{ item.datetime }}">
+                            <td>{{ item.datetime }}</td>
+                            <td>{{ item.name }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-8">
+                <img id="detail-image" src="" alt="Image not available" style="max-width: 100%;">
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function(){
+            $(".data-row").click(function(){
+                var datetime = $(this).data("datetime");
+                $.getJSON("/getdata", {datetime: datetime}, function(data) {
+                    $("#detail-image").attr("src", data.imageUrl);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
