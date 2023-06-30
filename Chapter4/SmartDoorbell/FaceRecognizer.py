@@ -83,7 +83,7 @@ if __name__ == "__main__":
     model_path = 'models/face_recognition_quant_edgetpu.tflite'
     label_path = 'models/list_of_people.csv'
     log_path = 'logs/recognition_timestamps.csv'
-    image_path = 'images/queen.png'
+    image_path = 'images/readers-test-picture.png'
 
     face_recognizer = FaceRecognizer(model_path, label_path, log_path)
     predicted_label = face_recognizer.get_prediction(image_path)
