@@ -1,0 +1,8 @@
+CherryPy
+jinja2
+opencv-python
+tensorflow
+RPi.GPIO
+Pillow
+tflite-runtime
+csv
