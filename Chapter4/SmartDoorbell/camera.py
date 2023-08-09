@@ -1,5 +1,4 @@
 import cv2
-import tensorflow as tf
 import RPi.GPIO as GPIO
 import time
 from FaceRecognizer import FaceRecognizer
@@ -8,7 +7,7 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(4, GPIO.OUT)
 
 camera = cv2.VideoCapture(0)
-model_path = 'models/face_recognition_quant.tflite'
+model_path = 'models/face_recognition_quant_edgetpu.tflite'
 label_path = 'models/list_of_people.csv'
 log_path = 'logs/recognition_timestamps.csv'
 cascade = cv2.CascadeClassifier("models/haarcascade_frontalface_default.xml")
