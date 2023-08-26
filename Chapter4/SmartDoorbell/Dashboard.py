@@ -36,5 +36,5 @@ if __name__ == '__main__':
             'tools.staticdir.dir': os.path.abspath('./images')
         }
     }
-    cherrypy.config.update({'server.socket_host': '10.0.0.62', 'server.socket_port': 8080})
+    cherrypy.config.update({'server.socket_host': '127.0.0.1', 'server.socket_port': 8080})
     cherrypy.quickstart(Dashboard(log_path), '/', conf)
