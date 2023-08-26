@@ -1,7 +1,7 @@
 import tensorflow as tf
 import numpy as np
 from PIL import Image
-import os
+import time  # Import the time module
 
 # Load TFLite model and allocate tensors
 interpreter = tf.lite.Interpreter(model_path='models/mobilenetv2.tflite')
@@ -11,18 +11,30 @@ interpreter.allocate_tensors()
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
 
-# Load and preprocess the image
+# Preprocess the Image
+def preprocess_image(image_path):
+    image = Image.open(image_path).convert('RGB')
+    image = image.resize((224, 224))
+    image_array = np.array(image)
+    image_array = image_array / 255.0 # Normalize to [0,1]
+    image_array = np.expand_dims(image_array, axis=0)
+    return image_array.astype('float32')
+
 image_path = 'images/Banana.png'
-image = Image.open(image_path).convert('RGB')
-image = image.resize((224, 224))
-image_array = np.expand_dims(np.array(image), axis=0)
-image_array = tf.keras.applications.mobilenet_v2.preprocess_input(image_array)
+image_array = preprocess_image(image_path)
 
 # Set the image as input tensor
 interpreter.set_tensor(input_details[0]['index'], image_array)
 
+# Start timer
+start_time = time.time()
+
 # Run the inference
 interpreter.invoke()
+
+# End timer and print inference time
+end_time = time.time()
+print(f"Inference time: {end_time - start_time:.4f} seconds")
 
 # Get the output tensor
 output_data = interpreter.get_tensor(output_details[0]['index'])
@@ -31,10 +43,10 @@ output_data = interpreter.get_tensor(output_details[0]['index'])
 predicted_class = np.argmax(output_data)
 
 # Class index for "banana" in ImageNet
-BANANA_CLASS_INDEX = 954
+BANANA_CLASS_INDEX = 954  # Change this value based on the model's specific class index for "banana"
 
 # Check if the prediction corresponds to a banana
 if predicted_class == BANANA_CLASS_INDEX:
-    print("This is a banana!")
+    print("Yes, it's a banana!")
 else:
-    print("This is not a banana.")
+    print("No, it's not a banana!")
