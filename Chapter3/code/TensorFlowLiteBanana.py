@@ -1,24 +1,25 @@
 import tensorflow as tf
 import numpy as np
 from PIL import Image
-import time  # Import the time module
+import time
 
 # Load TFLite model and allocate tensors
-interpreter = tf.lite.Interpreter(model_path='models/mobilenetv2.tflite')
+interpreter = tf.lite.Interpreter(model_path='models/lite-model_mobilenet_v2_100_224_fp32_1.tflite')
 interpreter.allocate_tensors()
 
 # Get input and output details
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
 
-# Preprocess the Image
+
 def preprocess_image(image_path):
     image = Image.open(image_path).convert('RGB')
     image = image.resize((224, 224))
     image_array = np.array(image)
-    image_array = image_array / 255.0 # Normalize to [0,1]
+    image_array = (image_array / 127.5) - 1  # Normalize to [-1, 1]
     image_array = np.expand_dims(image_array, axis=0)
     return image_array.astype('float32')
+
 
 image_path = 'images/Banana.png'
 image_array = preprocess_image(image_path)
@@ -43,7 +44,7 @@ output_data = interpreter.get_tensor(output_details[0]['index'])
 predicted_class = np.argmax(output_data)
 
 # Class index for "banana" in ImageNet
-BANANA_CLASS_INDEX = 954  # Change this value based on the model's specific class index for "banana"
+BANANA_CLASS_INDEX = 955
 
 # Check if the prediction corresponds to a banana
 if predicted_class == BANANA_CLASS_INDEX:

@@ -1,7 +1,7 @@
 import tensorflow as tf
 import tensorflow_hub as hub
 from tensorflow.keras.preprocessing.image import img_to_array, load_img
-import time
+import time  # Import the time module
 
 # Load Pre-trained Model
 model_url = "https://tfhub.dev/google/tf2-preview/mobilenet_v2/classification/4"
