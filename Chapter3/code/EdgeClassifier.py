@@ -1,16 +1,16 @@
-import tensorflow as tf
 import numpy as np
 from PIL import Image
 import time
+from pycoral.adapters import classify
+from pycoral.utils.dataset import read_label_file
+from pycoral.utils.edgetpu import make_interpreter
 
 class TFLiteClassifier:
 
-    def __init__(self, model_path='models/lite-model_mobilenet_v2_100_224_fp32_1.tflite'):
-        # Load TFLite model and allocate tensors
-        self.interpreter = tf.lite.Interpreter(model_path=model_path)
+    def __init__(self, model_path='models/mobilenet_v2_1.0_224_quantized_1_default_1.tflite', labels_path='models/labels.txt'):
+        self.interpreter = make_interpreter(model_path)
         self.interpreter.allocate_tensors()
-        self.input_details = self.interpreter.get_input_details()
-        self.output_details = self.interpreter.get_output_details()
+        self.labels = read_label_file(labels_path)
 
     def preprocess_image(self, image):
         
@@ -19,7 +19,6 @@ class TFLiteClassifier:
         else:
             image = Image.open(image)
             
-        #image = Image.open(image).convert('RGB')
         image = image.resize((224, 224))
         image_array = np.array(image)
         image_array = (image_array / 127.5) - 1  # Normalize to [-1, 1]
@@ -28,26 +27,22 @@ class TFLiteClassifier:
 
     def get_prediction(self, image):
         image_array = self.preprocess_image(image)
-        self.interpreter.set_tensor(self.input_details[0]['index'], image_array)
-
+        
         start_time = time.time()
+        self.interpreter.set_tensor(self.interpreter.input_details[0]['index'], image_array)
         self.interpreter.invoke()
+        classes = classify.get_classes(self.interpreter, top_k=1)
         end_time = time.time()
 
-        output_data = self.interpreter.get_tensor(self.output_details[0]['index'])
-        predicted_class = np.argmax(output_data)
+        elapsed_time = round(end_time - start_time, 2)
 
-        elapsed_time = round(end_time - start_time, 4)
-
-        return predicted_class, elapsed_time
-
+        return classes[0].id, self.labels[classes[0].id], elapsed_time
 
 if __name__ == "__main__":
     classifier = TFLiteClassifier()
-    predicted_class, inference_time = classifier.get_prediction('images/Banana.png')
+    predicted_class, label_name, inference_time = classifier.get_prediction('images/Banana.png')
 
-    BANANA_CLASS_INDEX = 955
-    if predicted_class == BANANA_CLASS_INDEX:
+    if "banana" in label_name.lower():
         print("Yes, it's a banana!")
     else:
         print("No, it's not a banana!")
