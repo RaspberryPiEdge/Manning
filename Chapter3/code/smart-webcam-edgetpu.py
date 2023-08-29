@@ -1,9 +1,9 @@
 import cv2
-from TFLiteClassifier import TFLiteClassifier
 from ImageNetLabel import ImageNetLabel
+from EdgeTPUClassifier import EdgeTPUClassifier
 
 camera = cv2.VideoCapture(0)
-classifier = TFLiteClassifier()
+classifier = EdgeTPUClassifier()
 label_translator = ImageNetLabel()
 
 while True:    
